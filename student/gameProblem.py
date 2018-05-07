@@ -22,11 +22,11 @@ class GameProblem(SearchProblem):
     # --------------- Common functions to a SearchProblem -----------------
 
     #Defining movements
-    def movement(self, action)
+    def movement(self, action):
         return{
             'North':(0,1),
             'East':(1,0),
-            'South'(0,-1),
+            'South':(0,-1),
             'West':(-1,0)
         }[action]
     
@@ -37,28 +37,37 @@ class GameProblem(SearchProblem):
         actions = ['North','East','South','West']
         ListAction = []
         
-        for x in action:
-            shift = (int(state[0]) + int(state.movement[x][0]), int(state[1]) + int(state.movement[x][1]))
+        
+        print ('CIAO')
+        for x in actions:
+            shift = (int(state[0]) + int(self.movement[x][0]), int(state[1]) + int(self.movement[x][1]))
         
         # Return all action exept for the water and Borders
             if (shift[0] < self.CONFIG["map_size"][0]
                 and shift[1] < self.CONFIG["map_size"][1]
                 and shift not in self.POSITIONS.get("sea")
                 and shift[0]>= 0
-                and shift[1]>= 0)
-
-            ListAction.append(x)
+                and shift[1]>= 0):
+                ListAction.append(x)
     
-        print action[]
+        print ('CIAO')
         
-        return ListAction[]
+        return ListAction
     
 
     def result(self, state, action):
         '''Returns the state reached from this state when the given action is executed
         '''
-        
+        # state (posx, posy, foto)
         state_final=0
+        n_foto = state[2]
+        
+        for x in action:
+            state_final = (int(state[0]) + int(self.movement[x][0]), int(state[1]) + int(self.movement[x][1]))
+        
+        # toma la foto
+        # if (
+        
         return state_final
 
     def is_goal(self, state):
@@ -79,16 +88,18 @@ class GameProblem(SearchProblem):
     def heuristic(self, state):
         '''Returns the heuristic for `state`
         '''
+        
+        # Manhattan entre todos los nodo meta
         return 0
 
 
     def setup (self):
       
-	print '\nMAP: ', self.MAP, '\n'
-	print 'POSITIONS: ', self.POSITIONS, '\n'
-	print 'CONFIG: ', self.CONFIG, '\n'
+        print '\nMAP: ', self.MAP, '\n'
+        print 'POSITIONS: ', self.POSITIONS, '\n'
+        print 'CONFIG: ', self.CONFIG, '\n'
       
-        initial_state = 0
+        initial_state = (self.CONFIG["agentInit"][0],self.CONFIG["agentInit"][1],0)
         final_state= 0
         algorithm= simpleai.search.astar
             
