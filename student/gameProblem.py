@@ -1,4 +1,4 @@
-#
+
 '''
     Class gameProblem, implements simpleai.search.SearchProblem
 '''
@@ -23,13 +23,9 @@ class GameProblem(SearchProblem):
 
     #Defining movements
     def movement(self, action):
-        return{
-            'North':(0,1),
-            'East':(1,0),
-            'South':(0,-1),
-            'West':(-1,0)
-        }[action]
-    
+
+        return{'North':(0,1),'East':(1,0),'South':(0,-1),'West':(-1,0)}[action]
+             
     def actions(self, state):
         
         '''Returns a LIST of the actions that may be executed in this state
@@ -37,45 +33,40 @@ class GameProblem(SearchProblem):
         actions = ['North','East','South','West']
         ListAction = []
         
-        
-        print ('CIAO')
         for x in actions:
-            shift = (int(state[0]) + int(self.movement[x][0]), int(state[1]) + int(self.movement[x][1]))
+            shift = (int(state[0]) + int(self.movement(x)[0]), int(state[1]) + int(self.movement(x)[1]))
         
         # Return all action exept for the water and Borders
-            if (shift[0] < self.CONFIG["map_size"][0]
-                and shift[1] < self.CONFIG["map_size"][1]
-                and shift not in self.POSITIONS.get("sea")
+            if (shift[0] < self.CONFIG['map_size'][0]
+                and shift[1] < self.CONFIG['map_size'][1]
+                and shift not in self.POSITIONS.get('sea')
                 and shift[0]>= 0
                 and shift[1]>= 0):
                 ListAction.append(x)
     
-        print ('CIAO')
-        
         return ListAction
     
 
     def result(self, state, action):
         '''Returns the state reached from this state when the given action is executed
         '''
-        # state (posx, posy, foto)
-        state_final=0
-        n_foto = state[2]
+        # state(posx, posy, foto tomadas)
+        toVisit = state[2]
+        listphoto = list(state[2])
         
-        for x in action:
-            state_final = (int(state[0]) + int(self.movement[x][0]), int(state[1]) + int(self.movement[x][1]))
-        
-        # toma la foto
-        # if (
-        
-        return state_final
+        # Movement
+        new_position = (int(state[0]) + int(self.movement(action)[0]), int(state[1]) + int(self.movement(action)[1]))
+
+        # Photo
+        if(new_position in self.POSITIONS.get('goal') and toVisit in listphoto):
+            toVisit.remove(listphoto)
+
+        return (new_position[0],new_position[1],toVisit)
 
     def is_goal(self, state):
         '''Returns true if state is the final state
         '''
-        if (state == self.GOAL):
-            return True
-        return False
+        return state == self.GOAL
 
     def cost(self, state, action, state2):
         '''Returns the cost of applying `action` from `state` to `state2`.
@@ -83,14 +74,23 @@ class GameProblem(SearchProblem):
            By default this function returns `1`.
         '''
         
-        return 1
+        cost = abs(state2[0]-state[0]) + abs(state2[1]-state[1])
+        
+        return cost
 
     def heuristic(self, state):
         '''Returns the heuristic for `state`
         '''
         
-        # Manhattan entre todos los nodo meta
-        return 0
+        # Manhattan desde el punto foto no tomadad mas lejos
+        # Mas distacia desde el punto meta hasta el punto donde es el Done
+        dst = [(abs(x[0]-state[0])+abs(x[1]-state[1])) for x in self.POSITIONS.get('goal')]
+        if dst==[]:
+            m=0
+        else:
+            m=max(dst)
+
+        return m + abs(self.POSITIONS['drone-base'][0][0]-state[0])+abs(self.POSITIONS['drone-base'][0][1]-state[1])
 
 
     def setup (self):
@@ -99,9 +99,9 @@ class GameProblem(SearchProblem):
         print 'POSITIONS: ', self.POSITIONS, '\n'
         print 'CONFIG: ', self.CONFIG, '\n'
       
-        initial_state = (self.CONFIG["agentInit"][0],self.CONFIG["agentInit"][1],0)
-        final_state= 0
-        algorithm= simpleai.search.astar
+        initial_state = (self.POSITIONS['drone-base'][0][0],self.POSITIONS['drone-base'][0][1],tuple(self.POSITIONS.get('goal')))
+        final_state= (self.POSITIONS['drone-base'][0][0],self.POSITIONS['drone-base'][0][1],())
+        algorithm = simpleai.search.astar
             
         return initial_state,final_state,algorithm
 
