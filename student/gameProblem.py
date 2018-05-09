@@ -24,14 +24,14 @@ class GameProblem(SearchProblem):
     #Defining movements
     def movement(self, action):
 
-        return{'North':(0,1),'East':(1,0),'South':(0,-1),'West':(-1,0)}[action]
+        return{'North':(0,-1),'East':(1,0),'South':(0,1),'West':(-1,0)}[action]
              
     def actions(self, state):
         
         '''Returns a LIST of the actions that may be executed in this state
         '''
         actions = ['North','East','South','West']
-        ListAction = []
+        listAction = []
         
         for x in actions:
             shift = (int(state[0]) + int(self.movement(x)[0]), int(state[1]) + int(self.movement(x)[1]))
@@ -42,26 +42,27 @@ class GameProblem(SearchProblem):
                 and shift not in self.POSITIONS.get('sea')
                 and shift[0]>= 0
                 and shift[1]>= 0):
-                ListAction.append(x)
+                listAction.append(x)
     
-        return ListAction
+        return listAction
     
 
     def result(self, state, action):
         '''Returns the state reached from this state when the given action is executed
         '''
         # state(posx, posy, foto tomadas)
-        toVisit = state[2]
-        listphoto = list(state[2])
+        listPhoto = list(state[2])
         
         # Movement
-        new_position = (int(state[0]) + int(self.movement(action)[0]), int(state[1]) + int(self.movement(action)[1]))
+        newPosition = (int(state[0]) + int(self.movement(action)[0]), int(state[1]) + int(self.movement(action)[1]))
 
         # Photo
-        if(new_position in self.POSITIONS.get('goal') and toVisit in listphoto):
-            toVisit.remove(listphoto)
+        if(newPosition in self.POSITIONS['goal'] and newPosition in listPhoto):
+            # Borrar esta posicion si es una meta
+            listPhoto.remove(newPosition)
 
-        return (new_position[0],new_position[1],toVisit)
+        print(newPosition[0],newPosition[1],tuple(listPhoto))
+        return (newPosition[0],newPosition[1],tuple(listPhoto))
 
     def is_goal(self, state):
         '''Returns true if state is the final state
@@ -73,15 +74,16 @@ class GameProblem(SearchProblem):
            The returned value is a number (integer or floating point).
            By default this function returns `1`.
         '''
-        
+        # Costo 1
         cost = abs(state2[0]-state[0]) + abs(state2[1]-state[1])
+        
+        # Anadir coste otros terreno
         
         return cost
 
     def heuristic(self, state):
         '''Returns the heuristic for `state`
         '''
-        
         # Manhattan desde el punto foto no tomadad mas lejos
         # Mas distacia desde el punto meta hasta el punto donde es el Done
         dst = [(abs(x[0]-state[0])+abs(x[1]-state[1])) for x in self.POSITIONS.get('goal')]
@@ -90,6 +92,7 @@ class GameProblem(SearchProblem):
         else:
             m=max(dst)
 
+#print(m + abs(self.POSITIONS['drone-base'][0][0]-state[0])+abs(self.POSITIONS['drone-base'][0][1]-state[1]))
         return m + abs(self.POSITIONS['drone-base'][0][0]-state[0])+abs(self.POSITIONS['drone-base'][0][1]-state[1])
 
 
@@ -99,7 +102,7 @@ class GameProblem(SearchProblem):
         print 'POSITIONS: ', self.POSITIONS, '\n'
         print 'CONFIG: ', self.CONFIG, '\n'
       
-        initial_state = (self.POSITIONS['drone-base'][0][0],self.POSITIONS['drone-base'][0][1],tuple(self.POSITIONS.get('goal')))
+        initial_state = (self.POSITIONS['drone-base'][0][0],self.POSITIONS['drone-base'][0][1],tuple(self.POSITIONS['goal']))
         final_state= (self.POSITIONS['drone-base'][0][0],self.POSITIONS['drone-base'][0][1],())
         algorithm = simpleai.search.astar
             
