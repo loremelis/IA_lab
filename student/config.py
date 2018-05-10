@@ -4,7 +4,7 @@ configuration = {
 "type": "load", #"random"
 "seed": None,
 "file": "./map.txt",
-"map_size": [10, 4],
+"map_size": [9, 3],
 "delay": 0.1,
 "debugMap": False,
 "debug": False,
@@ -12,6 +12,7 @@ configuration = {
 "hazards": False,
 "basicTile": "desert",
 "agentInit":  [2, 1],
+# "battery": [3, 2], [4, 5],
 "agentBaseTile": "drone-base",
 "agentType": "drone",
 "agentMarker": "A",
@@ -19,19 +20,33 @@ configuration = {
        "drone":"game/graphics/agents/drone.png"
      },
 "maptiles": {
+    "battery": {
+        "img": "game/graphics/terrains/battery.png",
+        "id":  "battery",
+        "marker": 'K',
+        "attributes":
+            {"agent":None,"cost": 1, "power": 20}
+        },
+    "battery-traversed": {
+    "img": "game/graphics/terrains/battery.png",
+        "id":  "battery-traversed",
+        "marker": 'k',
+        "attributes":
+            {"agent":None,"cost": 1, "power":20}
+        },
     "desert": {
         "img": "game/graphics/terrains/desert100.png",
         "id":  "desert",
         "marker": 'D',
         "attributes":
-             {"agent":None,"cost": 1}
+             {"agent":None,"cost": 2}
         },
     "desert-traversed": {
         "img": "game/graphics/terrains/desertTraversed100.png",
         "id":  "desert-traversed",
         "marker": 'd',
         "attributes":
-             {"agent":None,"cost": 1}
+             {"agent":None,"cost": 2}
         },
     "plains": {
         "img": "game/graphics/terrains/plains100.png",
@@ -39,7 +54,7 @@ configuration = {
         "marker": 'P',
         "num": 0,
         "attributes":
-             {"agent":None,"cost": 1}
+             {"agent":None,"cost": 2}
         },
     "plains-traversed": {
         "img": "game/graphics/terrains/plainsTraversed100.png",
@@ -47,7 +62,7 @@ configuration = {
         "marker": 'p',
         "num": 0,
         "attributes":
-             {"agent":None,"cost": 1}
+             {"agent":None,"cost": 2}
         },
     "hills": {
         "img": "game/graphics/terrains/hills100.png",
@@ -55,7 +70,7 @@ configuration = {
         "marker": 'H',
         "num": 0,
         "attributes":
-             {"agent":None,"cost": 1},
+             {"agent":None,"cost": 3},
         },
     "hills-traversed": {
         "img": "game/graphics/terrains/hillsTraversed100.png",
@@ -63,7 +78,7 @@ configuration = {
         "marker": 'h',
         "num": 0,
         "attributes":
-             {"agent":None,"cost": 1},
+             {"agent":None,"cost": 3},
         },
     "forest": {
         "img": "game/graphics/terrains/forest100.png",
@@ -71,7 +86,7 @@ configuration = {
         "marker": 'F',
         "num": 5,
         "attributes":
-             {"agent":None,"cost": 1},
+             {"agent":None,"cost": 4},
         },
     "forest-traversed": {
         "img": "game/graphics/terrains/forestTraversed100.png",
@@ -79,7 +94,7 @@ configuration = {
         "marker": 'f',
         "num": 0,
         "attributes":
-             {"agent":None,"cost": 1},
+             {"agent":None,"cost": 4},
         },
     "sea": {
         "img": "game/graphics/terrains/sea100.png",
