@@ -1,10 +1,10 @@
 configuration = {
 "text_size": 150,
 "tile_size": 60,
-"type": "load", #"random"
+"type": "random", #"load"
 "seed": None,
 "file": "./map.txt",
-"map_size": [9, 3],
+"map_size": [11, 4],
 "delay": 0.1,
 "debugMap": False,
 "debug": False,
@@ -12,7 +12,6 @@ configuration = {
 "hazards": False,
 "basicTile": "desert",
 "agentInit":  [2, 1],
-# "battery": [3, 2], [4, 5],
 "agentBaseTile": "drone-base",
 "agentType": "drone",
 "agentMarker": "A",
