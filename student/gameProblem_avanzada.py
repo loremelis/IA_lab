@@ -33,40 +33,68 @@ class GameProblem(SearchProblem):
         actions = ['North','East','South','West']
         listAction = []
         
+        # Control of Attribute 'sea'
+        try:
+            s = self.POSITIONS['sea']
+        except:
+            s = []
+
+        # Control of the actions
         for x in actions:
             shift = (int(state[0]) + int(self.movement(x)[0]), int(state[1]) + int(self.movement(x)[1]))
         
-        # Return all action exept for the water and Borders
+            # Return all action exept for the water and Borders
             if (shift[0] < self.CONFIG['map_size'][0]
                 and shift[1] < self.CONFIG['map_size'][1]
-                and shift not in self.POSITIONS.get('sea')
+                and shift not in s
                 and shift[0]>= 0
                 and shift[1]>= 0):
                 listAction.append(x)
     
+        # List of possible Action
         return listAction
     
 
     def result(self, state, action):
         '''Returns the state reached from this state when the given action is executed
         '''
-        # state(posx, posy, foto tomadas)
+        # state(posx, posy, foto tomadas, Battery)
+        battery = state[3]
+        if battery < 1 :
+            return state
         listPhoto = list(state[2])
         
         # Movement
         newPosition = (int(state[0]) + int(self.movement(action)[0]), int(state[1]) + int(self.movement(action)[1]))
 
+        # Battery
+        battery = battery - self.getAttribute(newPosition,"cost")
+        if battery < 1 :
+            return state
+
         # Photo
         if(newPosition in self.POSITIONS['goal'] and newPosition in listPhoto):
             # Borrar esta posicion si es una meta
             listPhoto.remove(newPosition)
-
-        return (newPosition[0],newPosition[1],tuple(listPhoto))
+        
+        # Battery
+        # Control of Attribute 'Battery'
+        try:
+            b = self.POSITIONS['battery']
+        except:
+            b = []
+        
+        # Charge
+        if (newPosition in b and b != None):
+            battery = self.INITIAL_STATE[3]
+        
+        return (newPosition[0],newPosition[1],tuple(listPhoto),battery)
 
     def is_goal(self, state):
         '''Returns true if state is the final state
         '''
-        return state == self.GOAL
+        
+        return (state[0]==self.GOAL[0] and state[1]==self.GOAL[1] and state[2]==self.GOAL[2] and state[3]>=0)
 
     def cost(self, state, action, state2):
         '''Returns the cost of applying `action` from `state` to `state2`.
@@ -116,7 +144,7 @@ class GameProblem(SearchProblem):
         else:
             m=max(dst)
 
-#print(m + abs(self.POSITIONS['drone-base'][0][0]-state[0])+abs(self.POSITIONS['drone-base'][0][1]-state[1]))
+        #print(m + abs(self.POSITIONS['drone-base'][0][0]-state[0])+abs(self.POSITIONS['drone-base'][0][1]-state[1]))
         return m + abs(self.POSITIONS['drone-base'][0][0]-state[0])+abs(self.POSITIONS['drone-base'][0][1]-state[1])
 
 
@@ -127,9 +155,16 @@ class GameProblem(SearchProblem):
         print 'CONFIG: ', self.CONFIG, '\n'
       
         # State (posx,posy,foto missed, battery)
-        initial_state = (self.POSITIONS['drone-base'][0][0],self.POSITIONS['drone-base'][0][1],tuple(self.POSITIONS['goal']), 30 )
-        final_state= (self.POSITIONS['drone-base'][0][0],self.POSITIONS['drone-base'][0][1],())
-        algorithm = simpleai.search.astar
+        initial_state = (self.POSITIONS['drone-base'][0][0],self.POSITIONS['drone-base'][0][1],tuple(self.POSITIONS['goal']), 20)
+        final_state= (self.POSITIONS['drone-base'][0][0],self.POSITIONS['drone-base'][0][1],(), 0)
+
+        # Algoritmos
+        # breadth_first = Amplitud
+        # depth_first = Profundidad
+        # uniform_cost
+        # greedy
+        # astar
+        algorithm = simpleai.search.breadth_first
     
             
         return initial_state,final_state,algorithm
